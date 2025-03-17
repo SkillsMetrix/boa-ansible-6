@@ -1,19 +1,25 @@
-# declare empty array
-use_numbers=[]
 
-# ask the user to add the value
 
-data= int(input('How many number you wana add...!'))
+class User:
+    name='shashi'
+    state='MH'
 
-# take the value
+# constructor
+    def __init__(self,email='none@mail.com',city='pune'):
+        self.email=email
+        self.city=city
 
-for i in range(data):
-    num= int(input (f"Enter numbers {i+1}"))
-    use_numbers.append(num)
-print(use_numbers)
+    def showState(self):
+        print(self.state)
 
-for num in use_numbers:
-    if(num%2==0):
-        print(f"{num} is even")
-    else:
-         print(f"{num} is odd")
+    def __str__(self):
+        return f"{self.name} ** {self.email} ** {self.city}"
+
+# obj-1
+user= User()
+
+# obj-2
+user2= User('usr@mail.com','pune')
+print(user)
+print(user2)
+user.showState()
