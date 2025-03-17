@@ -1,29 +1,30 @@
 
-class Student:
-    def __init__(self, rollno, name, subject, totalmarks):
-        self.rollno = rollno
-        self.name = name
-        self.subject = subject
-        self.totalmarks = totalmarks
 
-    def displayData(self):
-        print(f"The Name and subject of student is {
-              self.name} , {self.subject}")
+from abc import ABC,abstractmethod
 
-    def __str__(self):
-        return f"{self.rollno}, {self.name},{self.subject}, {self.totalmarks}"
-
-# create the object
+class RBI(ABC):
+    @abstractmethod
+    def depositAmount(self):
+        pass
+    @abstractmethod
+    def withdrawAmount(self):
+        pass
+    def openFD(self):
+        pass
 
 
-sayna = Student("199", "sanya", "Maths", "99")
-mahesh = Student("109", "mahesh", "Phy", "98")
 
-# display the object into human readable string we use __str__
+-------
 
 
-# sayna.displayData()
-# mahesh.displayData()
+from RBI import RBI
 
-print(mahesh)
-print(sayna)
+class SBI(RBI):
+     def depositAmount(self):
+         print('amount deposited in SBI')
+     def withdrawAmount(self):
+        print('amount withdrawn in SBI')
+
+sbiBank= SBI()
+sbiBank.depositAmount()
+sbiBank.withdrawAmount()
