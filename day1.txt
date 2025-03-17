@@ -1,25 +1,29 @@
 
+class Student:
+    def __init__(self, rollno, name, subject, totalmarks):
+        self.rollno = rollno
+        self.name = name
+        self.subject = subject
+        self.totalmarks = totalmarks
 
-class User:
-    name='shashi'
-    state='MH'
-
-# constructor
-    def __init__(self,email='none@mail.com',city='pune'):
-        self.email=email
-        self.city=city
-
-    def showState(self):
-        print(self.state)
+    def displayData(self):
+        print(f"The Name and subject of student is {
+              self.name} , {self.subject}")
 
     def __str__(self):
-        return f"{self.name} ** {self.email} ** {self.city}"
+        return f"{self.rollno}, {self.name},{self.subject}, {self.totalmarks}"
 
-# obj-1
-user= User()
+# create the object
 
-# obj-2
-user2= User('usr@mail.com','pune')
-print(user)
-print(user2)
-user.showState()
+
+sayna = Student("199", "sanya", "Maths", "99")
+mahesh = Student("109", "mahesh", "Phy", "98")
+
+# display the object into human readable string we use __str__
+
+
+# sayna.displayData()
+# mahesh.displayData()
+
+print(mahesh)
+print(sayna)
