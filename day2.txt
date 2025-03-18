@@ -1,22 +1,25 @@
 from fastapi import FastAPI,status,HTTPException
 from random import randrange
 from .import schemas
-
+# creating fast api object
 app= FastAPI()
+# dummy records
 user_data=[{"id":1,"uname":"admin","email":"admin@mail.com"}]
 
+# common find method to search the record (will help in search,update and delete)
 def findById(id):
     for i,p in enumerate(user_data):
         if p['id'] == id:
             print(i,p)
-            return p
+            return i
 
 
-
+# load the users from the server
 @app.get('/loadusers')
 def loadusers():
     return {'message':user_data}
 
+#load specific record
 @app.get('/loaduser/{id}')
 def loadUserById(id:int):
     data=findById(id)
@@ -26,14 +29,34 @@ def loadUserById(id:int):
         )
     return {'user found ': data}
 
+# delete the found record
+@app.delete('/deleteuser/{id}')
+def deleteUserById(id:int):
+    data=findById(id)
+    if data == None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,detail= "OOPS, user not found"
+        )
+    user_data.pop(data)
+    return {'message ': 'user found and deleted '}
 
+# update the found record with the new records
+@app.put('/updateuser/{id}')
+def updateUserById(id:int,payload: schemas.User):
+    data=findById(id)
+    if data == None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,detail= "OOPS, user not found"
+        )
+    udata=payload.model_dump()
+    udata['id']=id
+    user_data[data]=udata
+    return {'message ': 'user found and updted '}
+
+# add a new record
 @app.post('/create', status_code=status.HTTP_201_CREATED)
 def addUser(payload: schemas.User):
     postdata= payload.model_dump()
     postdata['id']=randrange(0,1000)
     user_data.append(postdata)
     return {'userdata':postdata}
-
-@app.get('/register')
-def register():
-    return {'message':'welcome to register'}
