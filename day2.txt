@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-from fastapi.params import Body
+from random import randrange
+from .import schemas
 
 app= FastAPI()
 
@@ -10,8 +11,11 @@ def loadusers():
     return {'message':user_data}
 
 @app.post('/create')
-def addUser(payload: dict=Body(...)):
-    return {'userdata':payload}
+def addUser(payload: schemas.User):
+    postdata= payload.model_dump()
+    postdata['id']=randrange(0,1000)
+    user_data.append(postdata)
+    return {'userdata':postdata}
 
 @app.get('/register')
 def register():
