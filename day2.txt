@@ -1,0 +1,18 @@
+from fastapi import FastAPI
+from fastapi.params import Body
+
+app= FastAPI()
+
+user_data=[{"id":1,"uname":"admin","email":"admin@mail.com"}]
+
+@app.get('/loadusers')
+def loadusers():
+    return {'message':user_data}
+
+@app.post('/create')
+def addUser(payload: dict=Body(...)):
+    return {'userdata':payload}
+
+@app.get('/register')
+def register():
+    return {'message':'welcome to register'}
