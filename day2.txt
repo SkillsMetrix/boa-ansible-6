@@ -1,4 +1,4 @@
-from fastapi import FastAPI,status
+from fastapi import FastAPI,status,HTTPException
 from random import randrange
 from .import schemas
 
@@ -20,6 +20,10 @@ def loadusers():
 @app.get('/loaduser/{id}')
 def loadUserById(id:int):
     data=findById(id)
+    if data == None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,detail= "OOPS, user not found"
+        )
     return {'user found ': data}
 
 
