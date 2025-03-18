@@ -1,16 +1,29 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,status
 from random import randrange
 from .import schemas
 
 app= FastAPI()
-
 user_data=[{"id":1,"uname":"admin","email":"admin@mail.com"}]
+
+def findById(id):
+    for i,p in enumerate(user_data):
+        if p['id'] == id:
+            print(i,p)
+            return p
+
+
 
 @app.get('/loadusers')
 def loadusers():
     return {'message':user_data}
 
-@app.post('/create')
+@app.get('/loaduser/{id}')
+def loadUserById(id:int):
+    data=findById(id)
+    return {'user found ': data}
+
+
+@app.post('/create', status_code=status.HTTP_201_CREATED)
 def addUser(payload: schemas.User):
     postdata= payload.model_dump()
     postdata['id']=randrange(0,1000)
@@ -20,15 +33,3 @@ def addUser(payload: schemas.User):
 @app.get('/register')
 def register():
     return {'message':'welcome to register'}
-
-
-
--------
-
-from pydantic import BaseModel
-from typing import Optional
-
-class User(BaseModel):
-    uname:str
-    email:str
-    city: Optional[str]=None
