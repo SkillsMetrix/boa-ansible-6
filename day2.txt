@@ -1,10 +1,11 @@
-from fastapi import FastAPI,status,HTTPException
+from fastapi import FastAPI,status,HTTPException,APIRouter
 from random import randrange
 from .import schemas
 # creating fast api object
-app= FastAPI()
+
+router= APIRouter(tags=["User Application"])
 # dummy records
-user_data=[{"id":1,"uname":"admin","email":"admin@mail.com"}]
+user_data=[]
 
 # common find method to search the record (will help in search,update and delete)
 def findById(id):
@@ -15,12 +16,12 @@ def findById(id):
 
 
 # load the users from the server
-@app.get('/loadusers')
+@router.get('/loadusers')
 def loadusers():
     return {'message':user_data}
 
 #load specific record
-@app.get('/loaduser/{id}')
+@router.get('/loaduser/{id}')
 def loadUserById(id:int):
     data=findById(id)
     if data == None:
@@ -30,7 +31,7 @@ def loadUserById(id:int):
     return {'user found ': data}
 
 # delete the found record
-@app.delete('/deleteuser/{id}')
+@router.delete('/deleteuser/{id}')
 def deleteUserById(id:int):
     data=findById(id)
     if data == None:
@@ -41,7 +42,7 @@ def deleteUserById(id:int):
     return {'message ': 'user found and deleted '}
 
 # update the found record with the new records
-@app.put('/updateuser/{id}')
+@router.put('/updateuser/{id}')
 def updateUserById(id:int,payload: schemas.User):
     data=findById(id)
     if data == None:
@@ -54,9 +55,22 @@ def updateUserById(id:int,payload: schemas.User):
     return {'message ': 'user found and updted '}
 
 # add a new record
-@app.post('/create', status_code=status.HTTP_201_CREATED)
+@router.post('/create', status_code=status.HTTP_201_CREATED)
 def addUser(payload: schemas.User):
     postdata= payload.model_dump()
     postdata['id']=randrange(0,1000)
     user_data.append(postdata)
     return {'userdata':postdata}
+
+
+
+-----
+
+
+from fastapi import FastAPI
+
+from . import crudapp
+
+app= FastAPI()
+
+app.include_router(crudapp.router)
