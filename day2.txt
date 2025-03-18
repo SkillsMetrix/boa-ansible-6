@@ -20,3 +20,15 @@ def addUser(payload: schemas.User):
 @app.get('/register')
 def register():
     return {'message':'welcome to register'}
+
+
+
+-------
+
+from pydantic import BaseModel
+from typing import Optional
+
+class User(BaseModel):
+    uname:str
+    email:str
+    city: Optional[str]=None
