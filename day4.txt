@@ -34,7 +34,9 @@
           - oranges
           - banana
 
-  
+  vars_files:
+    - my-vars.yml
+
   tasks:
     - name: print string value
       debug:
@@ -52,3 +54,6 @@
     - name: print specific value
       debug:
         var: fruits[1]
+    - name: print extername file value
+      debug:
+        var: username
