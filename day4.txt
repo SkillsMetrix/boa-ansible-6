@@ -1,0 +1,54 @@
+- name: vardemo
+  hosts: db
+  gather_facts: False
+  become: true
+
+  vars:
+    # string variables
+    username_firstname: 'amit kumar'
+    #boolean
+    is_enabled: true
+
+  #list
+
+    fruits:
+      - apple
+      - oranges
+      - banana
+
+  #dict var
+    fruits_price:
+      apple: 50
+      banana: 40
+      oranges: 70
+
+  # nested
+    fruits_basket:
+      - name: john
+        fruits:
+         - apple
+          - oranges
+
+      - name: sam
+        fruits:
+          - oranges
+          - banana
+
+  
+  tasks:
+    - name: print string value
+      debug:
+        var: username_firstname
+    - name: print boolean value
+      debug:
+        var: is_enabled
+    - name: print list value
+      debug:
+        var: fruits
+    - name: print dict value
+      debug:
+        var: fruits_price
+
+    - name: print specific value
+      debug:
+        var: fruits[1]
