@@ -1,59 +1,33 @@
-- name: vardemo
+---
+- name: Install and configure Nginx on a custom port
   hosts: db
-  gather_facts: False
-  become: true
-
+  become: yes
   vars:
-    # string variables
-    username_firstname: 'amit kumar'
-    #boolean
-    is_enabled: true
-
-  #list
-
-    fruits:
-      - apple
-      - oranges
-      - banana
-
-  #dict var
-    fruits_price:
-      apple: 50
-      banana: 40
-      oranges: 70
-
-  # nested
-    fruits_basket:
-      - name: john
-        fruits:
-         - apple
-          - oranges
-
-      - name: sam
-        fruits:
-          - oranges
-          - banana
-
-  vars_files:
-    - my-vars.yml
+    nginx_port: 8080
 
   tasks:
-    - name: print string value
-      debug:
-        var: username_firstname
-    - name: print boolean value
-      debug:
-        var: is_enabled
-    - name: print list value
-      debug:
-        var: fruits
-    - name: print dict value
-      debug:
-        var: fruits_price
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
 
-    - name: print specific value
-      debug:
-        var: fruits[1]
-    - name: print extername file value
-      debug:
-        var: username
+    - name: Configure Nginx to listen on a custom port
+      lineinfile:
+        path: /etc/nginx/sites-available/default
+        regexp: "listen 80 default_server;"
+        line: "    listen {{ nginx_port }} default_server;"
+        backup: yes
+      notify: Restart Nginx
+
+    - name: Allow traffic on the new Nginx port
+      ufw:
+        rule: allow
+        port: "{{ nginx_port }}"
+        proto: tcp
+
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
