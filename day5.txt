@@ -1,8 +1,74 @@
-ansible-playbook -i ../ansible-training/inventory.ini vault-playbook.yml
- 1239  ansible-playbook -i ../ansible-training/inventory.ini vault-playbook.yml -e @group_vars/my_vault.yml 
- 1240  ansible-playbook -i ../ansible-training/inventory.ini vault-playbook.yml -e @group_vars/my_vault.yml --ask-vault-pass
- 1241  clear
- 1242  openssl rand -base64 2048 > pass_file/ansible-vault.pass
- 1243  clear
- 1244  ansible-vault create group_vars/my_vault_base64.yml --vault-password-file=pass_file/ansible-vault.pass
- 1245  ansible-playbook -i ../ansible-training/inventory.ini vault-playbook.yml -e @group_vars/my_vault_base64.yml --vault-password-file=pass_file/ansible-vault.pass
+---
+- name: Install FastAPI and Run Sample App
+  hosts: green
+  become: true
+  gather_facts: False
+  tasks:
+    - name: Update APT package list
+      apt:
+        update_cache: yes
+
+    - name: Install required system packages
+      apt:
+        name:
+          - python3
+          - python3-pip
+          - python3-venv
+        state: present
+
+    - name: Create a project directory
+      file:
+        path: /opt/fastapi_app
+        state: directory
+        mode: '0755'
+
+    - name: Create a virtual environment
+      command: python3 -m venv /opt/fastapi_app/venv
+      args:
+        creates: /opt/fastapi_app/venv
+
+    - name: Install FastAPI and Uvicorn
+      pip:
+        name:
+          - fastapi
+          - uvicorn
+        virtualenv: /opt/fastapi_app/venv
+
+    - name: Create FastAPI application
+      copy:
+        dest: /opt/fastapi_app/main.py
+        content: |
+          from fastapi import FastAPI
+
+          app = FastAPI()
+
+          @app.get("/")
+          async def read_root():
+              return {"message": "Hello, FastAPI!"}
+
+    - name: Create a systemd service for FastAPI
+      copy:
+        dest: /etc/systemd/system/fastapi.service
+        content: |
+          [Unit]
+          Description=FastAPI Application
+          After=network.target
+
+          [Service]
+          User=ubuntu
+          WorkingDirectory=/opt/fastapi_app
+          ExecStart=/opt/fastapi_app/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Reload systemd daemon
+      systemd:
+        daemon_reload: yes
+
+    - name: Enable and start FastAPI service
+      systemd:
+        name: fastapi
+        enabled: yes
+        state: started
